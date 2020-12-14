@@ -42,7 +42,12 @@ cp /data/public_data/DL_models/darknet-53/darknet53_448.weights ./result/
 ```
 
 ### Detect bbox 
-#### test how yolo-v3 works on coco dataset.
+#### test how yolo-v3 works on coco dataset usin gpu 0.
 ```
 python detector.py --gpu 0 --job bbox_coco
+```
+
+#### test how yolo-v3 works on coco dataset usin cpu.
+```
+python detector.py --job bbox_coco
 ```
