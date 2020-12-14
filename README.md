@@ -2,7 +2,7 @@
 
 ## Clone repository
 ```
-git clone --recursive ["repository on server"]  
+git clone --recursive http://10.115.1.14/kohei/detector.git 
 ```
 
 
@@ -29,8 +29,11 @@ conda install -c conda-forge easydict
 
 
 
-## Download trained model
+### Download trained model
 Download Object detector from 10.56.254.1
 ```
-scp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3/models
+scp [user_name]@10.56.254.1:/data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3/models/
 ```
+
+
+
