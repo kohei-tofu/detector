@@ -129,7 +129,7 @@ def read_results(args):
     __dir = args.path_dataset
     cfg_bbox = cfgs.get(args.setting)
     path_models = cfg_bbox.MODEL.SAVE_PATH + "models/"
-    path_result = cfg_bbox.MODEL.SAVE_PATH + "your_dataset/"
+    path_result = cfg_bbox.MODEL.SAVE_PATH + "your_dataset" + "/"
     result_path = os.path.join(path_result, 'results.json')
     print(result_path)
 
@@ -149,6 +149,7 @@ if __name__ == "__main__":
     parser.add_argument('--job', '-J', type=str, default='bbox_coco', help='')
     parser.add_argument('--gpu', '-G', type=int, default='-1', help='')
     parser.add_argument('--path_dataset', '-PD', type=str, default='', help='')
+    parser.add_argument('--path_results', '-PR', type=str, default='your_dataset', help='')
     args = parser.parse_args()
 
     print("task : ", args.job)
