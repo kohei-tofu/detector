@@ -114,7 +114,8 @@ def detect_bbox_yourimgs(args):
         for blist2 in blist1:
             results.extend(blist2)
 
-    results.sort(key=lambda res : (res['image_id'], res['score']), reverse=True) 
+    #results.sort(key=lambda res : (res['image_id'], res['score']), reverse=True) 
+    results.sort(key=lambda res : (res['image_id'])) 
     print("results : ", len(results))
     result_path = os.path.join(path_result, 'results.json')
     print(result_path)
@@ -135,13 +136,14 @@ def read_results(args):
     
     with open(result_path, 'r') as f:
         results = json.load(f)
+        print(results)
 
 
 
 
 if __name__ == "__main__":
 
-    functions_list = ["bbox_coco", "bbox_yours", "read_results"]
+    functions_list = ["bbox_coco", "bbox_yours", "read_bboxes"]
     parser = argparse.ArgumentParser()
     parser.add_argument('--setting', '-S', type=str, default='setting_yolo', help='which setting file are you going to use for training.')
     parser.add_argument('--job', '-J', type=str, default='bbox_coco', help='')
@@ -149,13 +151,14 @@ if __name__ == "__main__":
     parser.add_argument('--path_dataset', '-PD', type=str, default='', help='')
     args = parser.parse_args()
 
+    print("task : ", args.job)
     if args.job in functions_list:
 
         if args.job == "bbox_coco":
             detect_bbox_cocoimgs(args)
         elif args.job == "bbox_yours":
             detect_bbox_yourimgs(args)
-        elif args.job == "read_results":
+        elif args.job == "read_bboxes":
             read_results(args)
 
     else:
