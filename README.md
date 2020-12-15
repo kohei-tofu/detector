@@ -55,6 +55,7 @@ cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3_vgg/m
 
 ### The commands that detects bboxes from image datasets.
 
+|:---:|:---:|
 |Arguments for program|Explanations|
 |:---:|:---|
 |setting|the model that you want to use.|
