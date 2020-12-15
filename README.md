@@ -54,8 +54,8 @@ python detector.py --job bbox_coco
 
 #### yolo-v3 detect bboxes from your own images.
 ```
-python detector.py --gpu 0 --job bbox_your --path_dataset [path for your own images]
-python detector.py --gpu 0 --job bbox_your --path_dataset /data/public_data/COCOK2020_1105/images/testK2020_1105/
+python detector.py --gpu 0 --job bbox_yours --path_dataset [path for your own images]
+python detector.py --gpu 0 --job bbox_yours --path_dataset /data/public_data/COCOK2020_1105/images/testK2020_1105/
 ```
 
 

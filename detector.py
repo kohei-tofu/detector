@@ -123,9 +123,25 @@ def detect_bbox_yourimgs(args):
 
 
 
+def read_results(args):
+
+    __dir = args.path_dataset
+    cfg_bbox = cfgs.get(args.setting)
+    path_models = cfg_bbox.MODEL.SAVE_PATH + "models/"
+    path_result = cfg_bbox.MODEL.SAVE_PATH + "your_dataset/"
+    result_path = os.path.join(path_result, 'results.json')
+    print(result_path)
+
+    
+    with open(result_path, 'r') as f:
+        results = json.load(f)
+
+
+
 
 if __name__ == "__main__":
 
+    functions_list = ["bbox_coco", "bbox_yours", "read_results"]
     parser = argparse.ArgumentParser()
     parser.add_argument('--setting', '-S', type=str, default='setting_yolo', help='which setting file are you going to use for training.')
     parser.add_argument('--job', '-J', type=str, default='bbox_coco', help='')
@@ -133,9 +149,17 @@ if __name__ == "__main__":
     parser.add_argument('--path_dataset', '-PD', type=str, default='', help='')
     args = parser.parse_args()
 
-    if args.job == "bbox_coco":
-        detect_bbox_cocoimgs(args)
-    if args.job == "bbox_your":
-        detect_bbox_yourimgs(args)
+    if args.job in functions_list:
+
+        if args.job == "bbox_coco":
+            detect_bbox_cocoimgs(args)
+        elif args.job == "bbox_yours":
+            detect_bbox_yourimgs(args)
+        elif args.job == "read_results":
+            read_results(args)
+
+    else:
+        print("Error")
+
     #detect_imgs(args)
 
