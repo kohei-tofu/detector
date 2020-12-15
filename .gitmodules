@@ -4,3 +4,6 @@
 [submodule "img_loader"]
 	path = img_loader
 	url = http://10.115.1.14/kohei/img_loader
+[submodule "keypoint_detector"]
+	path = keypoint_detector
+	url = http://10.115.1.14/kohei/keypoint_detector
