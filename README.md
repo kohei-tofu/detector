@@ -61,7 +61,7 @@ cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3_vgg/m
 |gpu| set gpu number to use. <br> if you want to run it on cpu, set negative number.|
 |job| the task you want to run. <br> ["bbox_coco", "bbox_yours", "read_bboxes"] can be selected.|
 |path_dataset| path to data. |
-|path_results| path to results file. <br> it is saved on results/["model_name"]/["path_results"]|
+|path_results| path to results file. <br> it is saved on ./results/["model_name"]/["path_results"]|
 
 
 ### Command examples
