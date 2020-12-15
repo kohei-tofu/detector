@@ -41,13 +41,21 @@ cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3/model
 cp /data/public_data/DL_models/darknet-53/darknet53_448.weights ./result/
 ```
 
-### Detect bbox 
-#### test how yolo-v3 works on coco dataset usin gpu 0.
+### The commands that detects bboxes from image datasets.
+#### yolo-v3 detect bboxes from coco dataset using gpu 0.
 ```
 python detector.py --gpu 0 --job bbox_coco
 ```
 
-#### test how yolo-v3 works on coco dataset usin cpu.
+#### yolo-v3 detect bboxes from coco dataset using cpu.
 ```
 python detector.py --job bbox_coco
 ```
+
+#### yolo-v3 detect bboxes from your own images.
+```
+python detector.py --gpu 0 --job bbox_your --path_dataset [path for your own images]
+python detector.py --gpu 0 --job bbox_your --path_dataset /data/public_data/COCOK2020_1105/images/testK2020_1105/
+```
+
+
