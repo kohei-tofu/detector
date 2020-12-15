@@ -30,18 +30,28 @@ conda install -c conda-forge easydict
 
 
 ### Download trained model
-Download Object detector (YOLO-v3, YOLO-v3-spp, YOLO-v3-vgg, darknet53) from 10.56.254.1
+Download Object detector (YOLO-v3-spp, darknet53) from 10.56.254.1
 ```
-scp [user_name]@10.56.254.1:/data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3/models/
-scp [user_name]@10.56.254.1:/data/public_data/DL_models/yolo-v3-spp/model_ckpt_best.pth ./result/yolov3/models/
+scp [user_name]@10.56.254.1:/data/public_data/DL_models/yolo-v3-spp/model_ckpt_best.pth ./result/yolov3_spp/models/
 scp [user_name]@10.56.254.1:/data/public_data/DL_models/darknet-53/darknet53_448.weights .result/
 
 or
 
-cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3/models/
 cp /data/public_data/DL_models/yolo-v3-spp/model_ckpt_best.pth ./result/yolov3_spp/models/
 cp /data/public_data/DL_models/darknet-53/darknet53_448.weights ./result/
 ```
+
+Download Object detector (YOLO-v3, YOLO-v3-vgg) from 10.56.254.1
+```
+scp [user_name]@10.56.254.1:/data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3/models/
+scp [user_name]@10.56.254.1:/data/public_data/DL_models/yolo-v3-vgg/model_ckpt_best.pth ./result/yolov3_vgg/models/
+
+or
+
+cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3/models/
+cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3_vgg/models/
+```
+
 
 ### The commands that detects bboxes from image datasets.
 #### yolo-v3 detect bboxes from coco dataset using gpu 0.
