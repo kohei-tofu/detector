@@ -125,10 +125,6 @@ def detect_bbox_yourimgs(args):
     with open(result_path, 'w') as f:
         json.dump(results, f)
 
-    np.save(path_result + "precision.npy", precision)
-    np.save(path_result + "recall.npy", recall)
-    np.save(path_result + "ap_class.npy", AP_)
-
 
 
 
