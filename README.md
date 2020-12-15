@@ -54,20 +54,37 @@ cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3_vgg/m
 
 
 ### The commands that detects bboxes from image datasets.
-#### yolo-v3 detect bboxes from coco dataset using gpu 0.
+
+|Arguments for program|Explanamtions|
+|:---:|:---:|
+||setting||----|
+||gpu||----|
+||job||----|
+||path_dataset|----|
+
+
+
+#### yolo-v3-spp detects bboxes from coco dataset using gpu 0.
 ```
-python detector.py --gpu 0 --job bbox_coco
+python detector.py --setting yolov3_spp --gpu 0 --job bbox_coco
 ```
 
-#### yolo-v3 detect bboxes from coco dataset using cpu.
+#### yolo-v3 detects bboxes from coco dataset using gpu 1.
 ```
-python detector.py --job bbox_coco
+python detector.py --setting yolov3 --gpu -1 --job bbox_coco
 ```
 
-#### yolo-v3 detect bboxes from your own images.
+#### yolo-v3-spp detects bboxes from coco dataset using cpu.
 ```
-python detector.py --gpu 0 --job bbox_yours --path_dataset [path for your own images]
-python detector.py --gpu 0 --job bbox_yours --path_dataset /data/public_data/COCOK2020_1105/images/testK2020_1105/
+python detector.py --setting yolov3_spp --gpu -1 --job bbox_coco
+```
+
+
+
+#### yolo-v3-spp detect bboxes from your own images.
+```
+python detector.py --setting yolov3_spp --gpu 0 --job bbox_yours --path_dataset [path for your own images]
+python detector.py --setting yolov3_spp --gpu 0 --job bbox_yours --path_dataset /data/public_data/COCOK2020_1105/images/testK2020_1105/
 ```
 
 

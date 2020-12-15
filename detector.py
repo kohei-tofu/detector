@@ -38,7 +38,7 @@ def detect_bbox_cocoimgs(args):
 
     device_name = "cuda:" + str(args.gpu) if torch.cuda.is_available() and args.gpu >= 0 else "cpu"
     device = torch.device(device_name)
-        
+    
     loader_aug = cfg_bbox.DATASET.TEST(cfg_bbox)
     model_bbox = cfg_bbox.MODEL.CLASS(cfg_bbox.MODEL)
     model_bbox.load_state_dict(torch.load(path_models + "model_ckpt_best.pth", map_location=device))
@@ -145,7 +145,7 @@ if __name__ == "__main__":
 
     functions_list = ["bbox_coco", "bbox_yours", "read_bboxes"]
     parser = argparse.ArgumentParser()
-    parser.add_argument('--setting', '-S', type=str, default='setting_yolo', help='which setting file are you going to use for training.')
+    parser.add_argument('--setting', '-S', type=str, default='setting_yolo_spp', help='which setting file are you going to use for training.')
     parser.add_argument('--job', '-J', type=str, default='bbox_coco', help='')
     parser.add_argument('--gpu', '-G', type=int, default='-1', help='')
     parser.add_argument('--path_dataset', '-PD', type=str, default='', help='')
