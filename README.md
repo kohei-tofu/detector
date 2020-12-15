@@ -57,10 +57,10 @@ cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3_vgg/m
 
 |Arguments for program|Explanamtions|
 |:---:|:---:|
-||setting||----|
-||gpu||----|
-||job||----|
-||path_dataset|----|
+|setting|----|
+|gpu|----|
+|job|----|
+|path_dataset|----|
 
 
 
