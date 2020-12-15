@@ -36,10 +36,8 @@ def detect_bbox_cocoimgs(args):
     path_models = cfg_bbox.MODEL.SAVE_PATH + "models/"
     path_result = cfg_bbox.MODEL.SAVE_PATH + "result/"
 
-    if int(args.gpu) < 0:
-        device = torch.device("cpu")
-    else:
-        device = torch.device("cuda:" + args.gpu if torch.cuda.is_available() else "cpu")
+    device_name = "cuda:" + str(args.gpu) if torch.cuda.is_available() and args.gpu >= 0 else "cpu"
+    device = torch.device(device_name)
         
     loader_aug = cfg_bbox.DATASET.TEST(cfg_bbox)
     model_bbox = cfg_bbox.MODEL.CLASS(cfg_bbox.MODEL)
@@ -91,10 +89,8 @@ def detect_bbox_yourimgs(args):
     operator.make_directory(path_result)
     
     __flip = True
-    if int(args.gpu) < 0:
-        device = torch.device("cpu")
-    else:
-        device = torch.device("cuda:" + args.gpu if torch.cuda.is_available() else "cpu")
+    device_name = "cuda:" + str(args.gpu) if torch.cuda.is_available() and args.gpu >= 0 else "cpu"
+    device = torch.device(device_name)
 
     bsize = 30
     transformer = Compose([Resize(416, 416, always_apply=True), \
@@ -133,7 +129,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--setting', '-S', type=str, default='setting_yolo', help='which setting file are you going to use for training.')
     parser.add_argument('--job', '-J', type=str, default='bbox_coco', help='')
-    parser.add_argument('--gpu', '-G', type=str, default='-1', help='')
+    parser.add_argument('--gpu', '-G', type=int, default='-1', help='')
     parser.add_argument('--path_dataset', '-PD', type=str, default='', help='')
     args = parser.parse_args()
 
