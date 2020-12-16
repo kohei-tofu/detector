@@ -74,11 +74,14 @@ cp /data/public_data/DL_models/MSPN/model_ckpt_best.pth ./result/mspn/models/
 
 |Arguments for program|Explanations|
 |:---:|:---|
-|setting|the model that you want to use.|
+|cfg_name|the config file for model that you want to use.|
+|setting|the model setting that you want to use.|
 |gpu| set gpu number to use. <br> if you want to run it on cpu, set negative number.|
-|job| the task you want to run. <br> ["bbox_coco", "bbox_yours", "read_bboxes"] can be selected.|
+|job| the task you want to run. <br> ["bbox_coco", "bbox_yours", "bboxkeypoint_yours", "read_bboxes"] can be selected.|
 |path_dataset| path to data. |
 |path_results| path to results file. <br> it is saved on ./results/["model_name"]/["path_results"]|
+|cfg_name2|the config file for model that you want to use.|
+|setting2|the model2 setting that you want to use.|
 
 
 ### Command examples
