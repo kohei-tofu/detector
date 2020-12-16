@@ -17,7 +17,8 @@ git clone --recursive http://10.115.1.14/kohei/detector.git
 * easydict
 
 
-### Install libraries on conda environment
+
+### Install libraries using pip
 ```
 conda install -c conda-forge pycocotools
 conda install -c conda-forge albumentations
@@ -27,6 +28,16 @@ conda install pytorch torchvision cudatoolkit=10.2 -c pytorch
 conda install -c conda-forge easydict
 ```
 
+
+### Install libraries on conda environment
+```
+pip install pycocotools
+pip install albumentations
+pip install numpy
+pip install scikit-image
+pip install torch torchvision
+pip install easydict
+```
 
 
 ### Download trained model
@@ -50,6 +61,12 @@ or
 
 cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3/models/
 cp /data/public_data/DL_models/yolo-v3/model_ckpt_best.pth ./result/yolov3_vgg/models/
+```
+
+Download Keypoint detector from 10.56.254.1
+```
+scp [user_name]@10.56.254.1:/data/public_data/DL_models/MSPN/model_ckpt_best.pth ./result/mspn/models/
+cp /data/public_data/DL_models/MSPN/model_ckpt_best.pth ./result/mspn/models/
 ```
 
 
@@ -87,9 +104,14 @@ python detector.py --setting yolov3_spp --gpu 0 --job bbox_yours --path_dataset 
 python detector.py --setting yolov3_spp --gpu 0 --job bbox_yours --path_dataset /data/public_data/COCOK2020_1105/images/testK2020_1105/ --path_results your_dataset
 ```
 
-* #### check bboxes from your dataset
+* #### detects bboxes from your dataset
 ```
 python detector.py --setting yolov3_spp --job read_bboxes --path_results your_dataset
 ```
 
+* #### detects bboxes and keypoints from your dataset
+```
+python detector.py --setting yolov3_spp --setting2 mspn --gpu 0 --job bboxkeypoint_yours --path_dataset /data/public_data/COCOK2020_1105/images/testK2020_1105/ --path_results your_dataset
 
+python detector.py --setting yolov3_spp --setting2 mspn --gpu 0 --job bboxkeypoint_yours --path_dataset /data/public_data/KARD/imgs/a01_s05_e03/ --path_results your_dataset
+```
