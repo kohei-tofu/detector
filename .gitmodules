@@ -7,3 +7,6 @@
 [submodule "keypoint_detector"]
 	path = keypoint_detector
 	url = http://10.115.1.14/kohei/keypoint_detector
+[submodule "format_annotation"]
+	path = format_annotation
+	url = http://10.115.1.14/kohei/format_annotation.git

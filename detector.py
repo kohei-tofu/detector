@@ -27,7 +27,7 @@ import yolo, keypoint_detector
 #from yolo import *
 from img_loader.utils import *
 from visualize import draw_bbox_each, draw_bbox
-from format import *
+from format_annotation.fmt_coco import *
 from keypoint_detector import util_keypoints
 
 def get_cfgs(cfg_name):
@@ -137,9 +137,6 @@ def detect_bbox_yourimgs(args):
         json.dump(results, f)
 
 
-
-
-
 def make_persion_batch(img, bbox_p):
 
     img_list = list()
@@ -173,10 +170,6 @@ def make_persion_batch(img, bbox_p):
         scale_list.append(scale)
 
     return img_list, leftupper_list, scale_list, person_list
-
-
-
-
 
 
 def extractANDdraw_keypoints(cfg_keypoints, boxes_list, loader_normal, keypoints_save, categories, device):
@@ -250,8 +243,14 @@ def extractANDdraw_keypoints(cfg_keypoints, boxes_list, loader_normal, keypoints
                 im = Image.fromarray(img_kb)
                 im.save(fname)
 
+    #info = {'description': 'COCO 2017 Dataset', 'url': 'http://cocodataset.org', 'version': '1.0', 'year': 2017, 'contributor': 'COCO Consortium', 'date_created': '2017/09/01'}
+    info = {'description': 'JTEKT 2020', 'version': '1.0', 'year': 2020}
     coco_categories = make_coco_categories()
-    results = {"images" : coco_images, "annotations" : coco_anns, "categories" : coco_categories}
+    results = {'images':coco_images, 
+               'annotations':coco_anns, 
+               'categories':coco_categories,
+               'info':info,
+               'licenses':get_license_coco()}
     
     return results
 
