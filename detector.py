@@ -1,3 +1,7 @@
+"""
+@author: Kohei Watanabe
+@contact: koheitech001[at]gmail.com
+"""
 
 from __future__ import division
 import os
@@ -27,7 +31,8 @@ import yolo, keypoint_detector
 #from yolo import *
 from img_loader.utils import *
 from visualize import draw_bbox_each, draw_bbox
-from format_annotation.fmt_coco import *
+#from format_annotation.fmt_coco import *
+from format_annotation import fmt_coco
 from keypoint_detector import util_keypoints
 
 def get_cfgs(cfg_name):
@@ -39,6 +44,51 @@ def get_cfgs(cfg_name):
         return cfg_keypoint
     else:
         raise ValueError
+
+def extract_bbox(boxes_list, loader_normal, draw_bbox, categories):
+
+    ofs = 0
+    coco_anns = list()
+    coco_images = list()
+    for loop_batch, (boexs_list2, (imgs, _targets)) in enumerate(zip(boxes_list, loader_normal)):
+
+        _, img_id, imsize = _targets[0], _targets[1], _targets[2]
+        fnames = _targets[3]
+        print(fnames[0])
+        
+        # deal with images one by one.
+        for loop_img, (boxes_p, i_id, fn, img) in enumerate(zip(boexs_list2, img_id, fnames, imgs)):
+
+            #
+            #print("loop_img", loop_img)
+            height, width = img.shape[0], img.shape[1]
+            #if len(img_cropped) == 0:
+            #    continue
+
+            anns_temp = fmt_coco.make_coco_annotations_bbox(ofs, i_id, boxes_p)
+            coco_anns += anns_temp
+            ofs += len(anns_temp)
+            coco_images += fmt_coco.make_coco_images(i_id, fn, height, width)
+
+            #if True:
+            if draw_bbox is not None:
+                fname = draw_bbox + 'keypoints_' + str(i_id) + '.jpg'
+                #img_kb = util_keypoints.add_keypoints2img(img, keypoints)
+                img_kb = draw_bbox(img_kb, boxes_p, categories, (255, 255, 255), (255, 0, 0))
+                print(fname, img_kb.shape)
+                im = Image.fromarray(img_kb)
+                im.save(fname)
+
+    #info = {'description': 'COCO 2017 Dataset', 'url': 'http://cocodataset.org', 'version': '1.0', 'year': 2017, 'contributor': 'COCO Consortium', 'date_created': '2017/09/01'}
+    info = {'description': 'JTEKT 2020', 'version': '1.0', 'year': 2020}
+    coco_categories = fmt_coco.make_coco_categories()
+    results = {'images':coco_images, 
+               'annotations':coco_anns, 
+               'categories':coco_categories,
+               'info':info,
+               'licenses':fmt_coco.get_license_coco()}
+    
+    return results
 
 
 def detect_bbox_cocoimgs(args):
@@ -84,8 +134,6 @@ def detect_bbox_cocoimgs(args):
     np.save(path_result + "recall.npy", recall)
     np.save(path_result + "ap_class.npy", AP_)
 
-
-
 def detect_bbox_yourimgs(args):
 
     import random
@@ -99,8 +147,12 @@ def detect_bbox_yourimgs(args):
     __dir = args.path_dataset
     cfg_bbox = cfgs.get(args.setting)
     path_models = cfg_bbox.MODEL.SAVE_PATH + "models/"
-    path_result = cfg_bbox.MODEL.SAVE_PATH + "your_dataset/"
-    operator.make_directory(path_result)
+    #path_result = cfg_bbox.MODEL.SAVE_PATH + "your_dataset/"
+    path_result1 = cfg_bbox.MODEL.SAVE_PATH + args.path_results
+    path_result2 = args.path_dataset + '../' + args.path_results
+    
+    operator.make_directory(path_result1)
+    operator.make_directory(path_result2)
     
     __flip = True
     device_name = "cuda:" + str(args.gpu) if torch.cuda.is_available() and args.gpu >= 0 else "cpu"
@@ -113,29 +165,57 @@ def detect_bbox_yourimgs(args):
     model_bbox.load_state_dict(torch.load(path_models + "model_ckpt_best.pth", map_location=device))
     model_bbox.to(device)
     model_bbox.set_device(device)
+    categories = fmt_coco.make_coco_categories()
 
     data_ = dir_loader.imgloader(__dir, transformer)
     loader_yolo = DataLoader(data_, batch_size=bsize,\
-                            shuffle=False, num_workers=2, collate_fn=data_loader.collate_fn_images,
+                            shuffle=False, num_workers=2, collate_fn=data_loader.collate_fn_images_sub,
                             worker_init_fn=lambda x: random.seed(num_seed))
 
     #loss, ind = cfg_bbox.MODEL.EVALUATE_DETAIL(cfg_bbox, model_bbox, loader_yolo, 20)
     loss, ind = cfg_bbox.MODEL.EVALUATE_DETAIL(cfg_bbox, model_bbox, loader_yolo, None)
     boxes_list = ind[0]
 
-    results = list()
-    for blist1 in boxes_list:
-        for blist2 in blist1:
-            results.extend(blist2)
+    results = extract_bbox(boxes_list, loader_yolo, None, categories)
+
+    #results = list()
+    #for blist1 in boxes_list:
+    #    for blist2 in blist1:
+    #        results.extend(blist2)
 
     #results.sort(key=lambda res : (res['image_id'], res['score']), reverse=True) 
-    results.sort(key=lambda res : (res['image_id'])) 
+    #results.sort(key=lambda res : (res['image_id'])) 
+    results["annotations"].sort(key=lambda res : (res['image_id'])) 
+    
     print("results : ", len(results))
-    result_path = os.path.join(path_result, 'results.json')
-    print(result_path)
-    with open(result_path, 'w') as f:
+    result_path1 = os.path.join(path_result1, 'results_bbox_score.json')
+    result_path2 = os.path.join(path_result2, 'results_bbox_score.json')
+    print(result_path1)
+    print(result_path2)
+    with open(result_path1, 'w') as f:
+        json.dump(results, f)
+    with open(result_path2, 'w') as f:
         json.dump(results, f)
 
+def detect_keypoint_yourimgs(args):
+
+    import random
+    from torch.utils.data import DataLoader
+    from img_loader.dataset import dir_loader, data_loader
+
+    cfgs = get_cfgs(args.cfg_name)
+    num_seed = 1234
+    #__dir = "/data/public_data/COCO2017/images/train2017/"
+    #__dir = "/data/public_data/COCOK2020_1105/images/testK2020_1105/"
+    __dir = args.path_dataset
+    cfg_bbox = cfgs.get(args.setting)
+    path_models = cfg_bbox.MODEL.SAVE_PATH + "models/"
+    #path_result = cfg_bbox.MODEL.SAVE_PATH + "your_dataset/"
+    path_result1 = cfg_bbox.MODEL.SAVE_PATH + args.path_results
+    path_result2 = args.path_dataset + '../' + args.path_results
+    
+    operator.make_directory(path_result1)
+    operator.make_directory(path_result2)
 
 def make_persion_batch(img, bbox_p):
 
@@ -229,10 +309,10 @@ def extractANDdraw_keypoints(cfg_keypoints, boxes_list, loader_normal, keypoints
 
             keypoints, maxvals = util_keypoints.map2keypoints(smap_ave, leftupper, scale, 17, shape_input, shape_output)
 
-            anns_temp = make_coco_annotations(ofs, i_id, boxes_p, person, keypoints, maxvals)
+            anns_temp = fmt_coco.make_coco_annotations(ofs, i_id, boxes_p, person, keypoints, maxvals)
             coco_anns += anns_temp
             ofs += len(anns_temp)
-            coco_images += make_coco_images(i_id, fn, height, width)
+            coco_images += fmt_coco.make_coco_images(i_id, fn, height, width)
 
             #if True:
             if keypoints_save is not None:
@@ -245,12 +325,12 @@ def extractANDdraw_keypoints(cfg_keypoints, boxes_list, loader_normal, keypoints
 
     #info = {'description': 'COCO 2017 Dataset', 'url': 'http://cocodataset.org', 'version': '1.0', 'year': 2017, 'contributor': 'COCO Consortium', 'date_created': '2017/09/01'}
     info = {'description': 'JTEKT 2020', 'version': '1.0', 'year': 2020}
-    coco_categories = make_coco_categories()
+    coco_categories = fmt_coco.make_coco_categories()
     results = {'images':coco_images, 
                'annotations':coco_anns, 
                'categories':coco_categories,
                'info':info,
-               'licenses':get_license_coco()}
+               'licenses':fmt_coco.get_license_coco()}
     
     return results
 
@@ -267,11 +347,12 @@ def detect_bboxANDkeypoint_yourimgs(args):
     cfg_bbox = cfgs.get(args.setting)
     cfg_keypoints = cfgs2.get(args.setting2)
     path_models = cfg_bbox.MODEL.SAVE_PATH + "models/"
-    path_result = cfg_bbox.MODEL.SAVE_PATH + "your_dataset/"
-    keypoints_save = __dir + "../result/keypoints/"
+    path_result1 = cfg_bbox.MODEL.SAVE_PATH + args.path_results
+    path_result2 = __dir + "../"  + args.path_results
     #keypoints_save = __dir
 
-    operator.make_directory(path_result)
+    operator.make_directory(path_result1)
+    operator.make_directory(path_result2)
     __flip = True
     
     bsize = args.batchsize
@@ -299,11 +380,6 @@ def detect_bboxANDkeypoint_yourimgs(args):
     loss, ind = cfg_bbox.MODEL.EVALUATE_DETAIL(cfg_bbox, model_bbox, loader_yolo, None)
     boxes_list = ind[0]
 
-    
-    
-    operator.remove_files(keypoints_save)
-    operator.make_directory(keypoints_save)
-
     data_normal = dir_loader.imgloader(__dir, None)
     loader_normal = DataLoader(data_normal, batch_size=bsize,\
                                 shuffle=False, num_workers=2, collate_fn=data_loader.collate_fn_images_sub,
@@ -318,9 +394,13 @@ def detect_bboxANDkeypoint_yourimgs(args):
     #anns_list = extractANDdraw_keypoints(cfg_keypoints, boxes_list, loader_normal, keypoints_save, categories, device)
     anns_list = extractANDdraw_keypoints(cfg_keypoints, boxes_list, loader_normal, None, categories, device)
     anns_list["annotations"].sort(key=lambda res : (res['image_id']), reverse=True) 
-    anns_path = os.path.join(keypoints_save, 'results.json')
-    print(anns_path)
-    with open(anns_path, 'w') as f:
+    path_result1 = os.path.join(path_result1, 'results.json')
+    path_result2 = os.path.join(path_result2, 'results.json')
+    print(path_result1)
+    print(path_result2)
+    with open(path_result1, 'w') as f:
+        json.dump(anns_list, f)
+    with open(path_result2, 'w') as f:
         json.dump(anns_list, f)
 
 
@@ -330,16 +410,38 @@ def read_results(args):
     __dir = args.path_dataset
     cfg_bbox = cfgs.get(args.setting)
     path_models = cfg_bbox.MODEL.SAVE_PATH + "models/"
-    path_result = cfg_bbox.MODEL.SAVE_PATH + "your_dataset" + "/"
-    result_path = os.path.join(path_result, 'results.json')
+    path_result1 = cfg_bbox.MODEL.SAVE_PATH + args.path_results
+    result_path = os.path.join(path_result1, 'results_bbox.json')
+    #result_path = "/data/public_data/COCO2017/annotations/instances_val2017.json"
+    result_path = "/data/public_data/COCO2017/annotations/person_keypoints_val2017.json"
+
     print(result_path)
 
+    #with open(result_path, 'r') as f:
+    #    results = json.load(f)
+    #    print(results)
+
+    cc = COCO(result_path)
+    catIds_1 = cc.getCatIds(catNms=['person'])
+    imgIds_1 = cc.getImgIds(catIds=catIds_1)
+    imgIds_3 = cc.getImgIds()
     
-    with open(result_path, 'r') as f:
-        results = json.load(f)
-        print(results)
+    cats = cc.loadCats(cc.getCatIds())
+    nms=[cat['name'] for cat in cats]
+    cat_id = [cat['id'] for cat in cats]
 
+    #catIds_1 = cc.getCatIds(catNms=['person','dog','skateboard'])
 
+    print(catIds_1)
+    print(imgIds_1)
+    print(nms, cat_id)
+    print(imgIds_3)
+    
+    for i_id in imgIds_3:
+        ann_ids = cc.getAnnIds(imgIds=i_id, iscrowd=False)
+        anns = cc.loadAnns(ann_ids)
+        print(ann_ids)
+        print(anns)
 
 
 if __name__ == "__main__":
@@ -354,7 +456,7 @@ if __name__ == "__main__":
     parser.add_argument('--job', '-J', type=str, default='bbox_coco', help='')
     parser.add_argument('--gpu', '-G', type=int, default='-1', help='')
     parser.add_argument('--path_dataset', '-PD', type=str, default='', help='')
-    parser.add_argument('--path_results', '-PR', type=str, default='your_dataset', help='')
+    parser.add_argument('--path_results', '-PR', type=str, default='result', help='')
     args = parser.parse_args()
 
     print("task : ", args.job)

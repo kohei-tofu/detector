@@ -18,7 +18,7 @@ git clone --recursive http://10.115.1.14/kohei/detector.git
 
 
 
-### Install libraries using pip
+### Install libraries on conda environment
 ```
 conda install -c conda-forge pycocotools
 conda install -c conda-forge albumentations
@@ -29,7 +29,7 @@ conda install -c conda-forge easydict
 ```
 
 
-### Install libraries on conda environment
+### Install libraries using pip
 ```
 pip install pycocotools
 pip install albumentations

@@ -1,5 +1,9 @@
-import numpy as np
+"""
+@author: Kohei Watanabe
+@contact: koheitech001[at]gmail.com
+"""
 
+import numpy as np
 
 
 def draw_bbox_each(img, bbox, text, textcolor, bbcolor):
